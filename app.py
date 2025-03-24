@@ -1,9 +1,17 @@
 import gi
+import logging
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
 from huffman import * 
+
+# Configure logging
+logging.basicConfig(
+    filename="app.log",  # Log to a file named 'app.log'
+    level=logging.INFO,  # Set the logging level to INFO
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 class HuffmanApp(Gtk.Window):
     def __init__(self):
@@ -34,16 +42,20 @@ class HuffmanApp(Gtk.Window):
         vbox.pack_start(self.compressed_entry, False, False, 0)
         
     def on_compress_button_clicked(self, widget):
-        print("Compressing...")
 
         uncompressed_input = self.uncompressed_entry.get_text()
-        compress(uncompressed_input)
+
+        if uncompressed_input:
+            logging.info("Compressing %s", uncompressed_input)
+            self.compressed_entry.set_text(compress(uncompressed_input))
 
     def on_decompress_button_clicked(self, widget):
-        print("Decompressing...")
 
         compressed_input = self.compressed_entry.get_text()
-        decompress(compressed_input)
+
+        if compressed_input:
+            logging.info("Decompressing %s", compressed_input)
+            self.uncompressed_entry.set_text(decompress(compressed_input))
 
 if __name__ == "__main__":
     app = HuffmanApp()
