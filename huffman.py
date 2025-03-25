@@ -93,7 +93,7 @@ def compress(value):
     print(output)
     
     #return ('%x' % int(output, 2)).decode('hex').decode('utf-8')
-    return 'compressed ' + value 
+    return output
      
 def decompress(value):
 
