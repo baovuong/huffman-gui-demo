@@ -30,11 +30,14 @@ class Node:
 
 def to_bin(value):
     return ''.join([format(ord(x), '08b') for x in value])
-    
+
+def max_bitsize(value):
+    return max([(ord(x)-32).bit_length() for x in value])
+
 """create binary tree
 Create a binary tree from a priority queue of nodes
 returns the root node of the tree
-"""
+""" 
 def create_binary_tree(node_queue):
     while node_queue.qsize() > 1:
         node1 = node_queue.get()[1]
@@ -55,12 +58,17 @@ def create_codes(node, code='', codes={}):
         create_codes(node.right, code + '1', codes)
     return codes
 
-def encode_tree(node, tree=''):
+def encode_tree(node, bitsize=8):
     if node.is_leaf():
-        return '1' + bin(ord(node.symbol))[2:]
+        return '1' + node.symbol + ' ' # format(ord(node.symbol), '0%xb' % bitsize)
     else:
-        return '0' + encode_tree(node.left) + encode_tree(node.right)
+        return '0 ' + encode_tree(node.left, bitsize) + encode_tree(node.right, bitsize)
 
+
+"""
+function to compress a string using huffman encoding
+format: <char bitsize(4)><tree(variable)><encoded value(variable)>
+"""
 def compress(value):
 
     print('before: %s' % to_bin(value))
@@ -84,12 +92,14 @@ def compress(value):
     codes = create_codes(root)
 
     # Encode tree
-    encoded_tree = encode_tree(root)
+    bits = max_bitsize(value)
+    print(bits)
+    encoded_tree = encode_tree(root, bits)
 
     # Encode the value
-    encoded_value = ''.join([codes[symbol] for symbol in value])
+    encoded_value = ' '.join([codes[symbol] for symbol in value])
 
-    output = encoded_tree + encoded_value
+    output = format(bits, '04b') + ' ' + encoded_tree + encoded_value
     print(output)
     
     #return ('%x' % int(output, 2)).decode('hex').decode('utf-8')
